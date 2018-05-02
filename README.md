@@ -12,6 +12,7 @@ Written in under a day using
 
 3. Preloaded with Weevely PHP Weaponized Webshells, one JavaScript reverse shell provided by Rapid7 and one example CoinHive Cryptominer
 
+[!](https://raw.githubusercontent.com/tanc7/tropicalblast/master/running.png)
 
 All it really does, is spam the living hell out of enumerated file upload vulnerabilities and path permissions issues that should have been taken care of by their administrators.
 
