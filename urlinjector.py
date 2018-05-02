@@ -1,4 +1,5 @@
-
+#!/usr/bin/python
+#coding=utf-8
 import requests, operator, socket, os, sys, subprocess, threading, re, time, colored
 from requests import *
 import termcolor
